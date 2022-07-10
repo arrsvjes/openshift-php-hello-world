@@ -8,8 +8,11 @@ LABEL description="A custom Apache container based on UBI 8"
 
 RUN yum install -y httpd && yum clean all
 
-RUN sed -ri -e "/^Listen 80/c\Listen ${PORT}" /etc/httpd/conf/httpd.conf && chown -R apache:apache /etc/httpd/logs/ && chown -R apache:apache /run/httpd/ && chmod -R 0755 /run/httpd/ /etc/httpd/logs/
+RUN sed -ri -e "/^Listen 80/c\Listen ${PORT}" /etc/httpd/conf/httpd.conf
 
+RUN chown -R 0 /etc/httpd/logs/ /run/httpd/ && \
+  chmod -R g=u /etc/httpd/logs/ /run/httpd/
+  
 RUN echo "Hello from Containerfile" > /var/www/html/index.html
 
 USER apache

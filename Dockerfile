@@ -1,22 +1,13 @@
-FROM registry.access.redhat.com/ubi8/ubi:8.6-855
+FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
 
-MAINTAINER Jesus Arriola <arriola.jesus@hotmail.com>
+RUN microdnf install --nodocs -y socat iproute
 
-ENV PORT 8080
+RUN mkdir /www/ && chmod 770 /www/
 
-LABEL description="A custom Apache container based on UBI 8"
+ADD srv.sh /www/srv.sh
 
-RUN yum install -y httpd && yum clean all
+EXPOSE 8080
 
-RUN sed -ri -e "/^Listen 80/c\Listen ${PORT}" /etc/httpd/conf/httpd.conf
+USER 1984
 
-RUN chown -R 0 /etc/httpd/logs/ /run/httpd/ && \
-  chmod -R g=u /etc/httpd/logs/ /run/httpd/
-  
-RUN echo "Hello from Containerfile" > /var/www/html/index.html
-
-USER apache
-
-EXPOSE ${PORT}
-
-CMD ["httpd", "-D", "FOREGROUND"]
+CMD socat TCP4-LISTEN:8080,fork EXEC:/www/srv.sh

@@ -6,6 +6,8 @@ RUN mkdir /www/ && chmod 770 /www/
 
 ADD srv.sh /www/srv.sh
 
+RUN chmod a+x /www/srv.sh
+
 EXPOSE 8080
 
 USER 1984
